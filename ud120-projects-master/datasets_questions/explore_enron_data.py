@@ -27,7 +27,7 @@ for people in enron_data.items():
 
 print "Feature number",len(enron_data.items()[0][1])
 
-names=open(r"E:\machine_learning\ud120-projects-master/final_project/poi_names.txt","r")
+names=open(r"D:\github\machine_learning\ud120-projects-master\final_project/poi_names.txt","r")
 print len(names.readlines())
 names.seek(0)
 
@@ -56,4 +56,15 @@ def get_feature(dataset=enron_data,name="PRENTICE JAMES",feature="email"):
     for people in dataset.items():
         if people[0]==name:
             return people[1][feature]
-            
+if __name__== "__main__":
+    number_quantified_salary=0
+    for people in enron_data.items():
+        try:
+            int(people[1]["salary"])
+            number_quantified_salary +=1
+        except ValueError:
+            pass
+    number_email=0
+    for people in enron_data.items():
+        if re.search(".com", people[1]["email_address"], re.IGNORECASE):
+            number_email +=1
