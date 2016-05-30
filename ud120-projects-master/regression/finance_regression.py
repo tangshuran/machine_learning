@@ -31,7 +31,7 @@ feature_train, feature_test, target_train, target_test = train_test_split(featur
 train_color = "b"
 test_color = "r"
 
-
+import numpy as np
 
 ### Your regression goes here!
 ### Please name it reg, so that the plotting code below picks it up and 
@@ -42,9 +42,13 @@ reg= linear_model.LinearRegression()
 reg.fit(feature_train,target_train)
 print reg.coef_
 print reg.intercept_ 
+from sklearn.metrics import accuracy_score
+pred = reg.predict(feature_train)
+pred=[float(a) for a in pred]
+target_train=[float(a) for a in target_train]
+score= accuracy_score(pred,target_train)
 
-
-
+print score
 
 ### draw the scatterplot, with color-coded training and testing points
 import matplotlib.pyplot as plt
