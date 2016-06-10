@@ -2,7 +2,9 @@
 
 from nltk.stem.snowball import SnowballStemmer
 import string
-
+import os
+os.chdir(r"E:\machine_learning\ud120-projects-master\text_learning")
+stemmer=SnowballStemmer("english")
 def parseOutText(f):
     """ given an opened email file f, parse out all text below the
         metadata block at the top
@@ -26,9 +28,16 @@ def parseOutText(f):
     if len(content) > 1:
         ### remove punctuation
         text_string = content[1].translate(string.maketrans("", ""), string.punctuation)
-
+        text_string=text_string.strip("\n")
+        words_list=text_string.split(" ")
+        for word in words_list:
+            if word != "":
+                words=words+stemmer.stem(word)+" "
+            
+        
+        
         ### project part 2: comment out the line below
-        words = text_string
+        #words = text_string
 
         ### split the text string into individual words, stem each word,
         ### and append the stemmed word to words (make sure there's a single
