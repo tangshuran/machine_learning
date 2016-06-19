@@ -46,7 +46,7 @@ from sklearn.metrics import accuracy_score
 pred = reg.predict(feature_train)
 pred=[float(a) for a in pred]
 target_train=[float(a) for a in target_train]
-score= accuracy_score(pred,target_train)
+score= accuracy_score(pred,target_test)
 
 print score
 
