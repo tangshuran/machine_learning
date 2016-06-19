@@ -1,11 +1,13 @@
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer,TfidfVectorizer
 vectorizer=CountVectorizer()
+v1=TfidfVectorizer()
 string1="hi katie the self driving car will be late best sebastian"
 string2="hi sebastian the machine learning will be great great great best katie"
 string3="hi katie the machine learning will be most excellent"
 email_list=[string1,string2,string3]
 bag_of_words=vectorizer.fit(email_list)
 bag_of_words=vectorizer.transform(email_list)
+vv=v1.fit_transform(email_list)
 for a in bag_of_words:
     print a
 feature_words = vectorizer.get_feature_names() 

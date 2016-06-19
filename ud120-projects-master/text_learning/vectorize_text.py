@@ -5,6 +5,7 @@ import pickle
 import re
 import sys
 #from sklearn.feature_extraction.text import TfidfTransformer
+os.chdir(r"D:\github\machine_learning\ud120-projects-master\text_learning")
 sys.path.append( "../tools/" )
 from parse_out_email_text import parseOutText
 
@@ -51,7 +52,7 @@ for name, from_person in [("sara", from_sara),("chris", from_chris)]:
             ### use parseOutText to extract the text from the opened email
             text=parseOutText(email)
             ### use str.replace() to remove any instances of the words
-            odds=["sara", "shackleton", "chris", "germani"]
+            odds=["sara", "shackleton", "chris", "germani","sshacklensf","cgermannsf","houectect","houect"]
             for a in odds:
                 text=text.replace(a,"")
                         

@@ -3,8 +3,8 @@
 import pickle
 import numpy
 numpy.random.seed(42)
-
-
+import os
+os.chdir(r"D:\github\machine_learning\ud120-projects-master\feature_selection")
 ### The words (features) and authors (labels), already largely processed.
 ### These files should have been created from the previous (Lesson 10)
 ### mini-project.
@@ -38,6 +38,21 @@ labels_train   = labels_train[:150]
 
 
 ### your code goes here
+#from sklearn.linear_model import Lasso
+#regression=Lasso()
+#regression.fit(features_train,labels_train)
+#print regression.coef_
 
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+clf=DecisionTreeClassifier()
+clf.fit(features_train,labels_train)
+pred=clf.predict(features_test)
+accuracy=accuracy_score(pred,labels_test)
+print accuracy
 
-
+for index,a in enumerate(clf.feature_importances_):
+    if a >0.2:
+        print index,a
+#print vectorizer.get_feature_names()[33614]
+#print vectorizer.get_feature_names()[14343]
