@@ -24,3 +24,10 @@ print dense
 print ''
 print 'what number is "great"?'
 print vectorizer.vocabulary_.get('great')
+import numpy
+print ""
+print "the squared sum of the normalized vector is:"
+
+ee=numpy.array(vv.todense()[0])
+ww=ee*ee
+print numpy.sum(ww)
