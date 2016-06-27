@@ -62,6 +62,7 @@ def get_a_feature(feature,data=data_dict):
 salary=get_a_feature("salary")
 sorted_salary=sorted(salary, key=lambda x:x[1],reverse=True)
 #Then we can find the bad guy
+print "outlier is:"
 print sorted_salary[0]
 #delete the ourlier from our data
 data_dict.pop(sorted_salary[0][0])
