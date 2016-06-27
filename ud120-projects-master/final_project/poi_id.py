@@ -51,6 +51,20 @@ x,y=pre_visualization("salary",'bonus')
 plt.plot(x,y,".")
 plt.show() #we can see that there is a point at the top right part of the plot, that is a outlier
 #next thing to do is to find the outlier, and delete it
+def get_a_feature(feature,data=data_dict):
+    value=[]
+    name=[]
+    for people,info in data.iteritems():
+        if info[feature]!="NaN":
+            value.append(info[feature])
+            name.append(people)
+    return zip(name,value)
+salary=get_a_feature("salary")
+sorted_salary=sorted(salary, key=lambda x:x[1],reverse=True)
+#Then we can find the bad guy
+print sorted_salary[0]
+#delete the ourlier from our data
+data_dict.pop(sorted_salary[0][0])
 
 ### Task 3: Create new feature(s)
 ### Store to my_dataset for easy export below.
