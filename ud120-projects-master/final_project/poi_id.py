@@ -16,8 +16,11 @@ from tester import dump_classifier_and_data
 ### Task 1: Select what features you'll use.
 ### features_list is a list of strings, each of which is a feature name.
 ### The first feature must be "poi".
-features_list = ['poi','salary',  'from_poi_to_this_person', 'from_messages', 'from_this_person_to_poi', 'shared_receipt_with_poi',
-'total_payments', 'loan_advances', 'bonus', 'restricted_stock_deferred', 'deferred_income', 'total_stock_value', 'expenses'] # You will need to use more features
+features_list =  ['salary', 'deferral_payments', 'total_payments',
+'loan_advances', 'bonus', 'restricted_stock_deferred', 'deferred_income', 
+'total_stock_value', 'expenses', 'exercised_stock_options', 'other', 
+'long_term_incentive', 'restricted_stock', 'director_fees','to_messages',
+'from_poi_to_this_person', 'from_messages', 'from_this_person_to_poi', 'shared_receipt_with_poi'] # You will need to use more features
 
 ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
@@ -62,15 +65,20 @@ def get_a_feature(feature,data=data_dict):
 salary=get_a_feature("salary")
 sorted_salary=sorted(salary, key=lambda x:x[1],reverse=True)
 #Then we can find the bad guy
-print "outlier is:"
 print sorted_salary[0]
 #delete the ourlier from our data
 data_dict.pop(sorted_salary[0][0])
 
 ### Task 3: Create new feature(s)
 ### Store to my_dataset for easy export below.
+#create a new feature named "stock_to_salary_ratio"
 my_dataset = data_dict
-
+for each in my_dataset.values():
+    if each['salary']!="NaN" and each['total_stock_value'] !="NaN":
+        each["stock_to_salary_ratio"]=float(each['total_stock_value'])/each['salary']
+    else:
+        each["stock_to_salary_ratio"]="NaN"
+features_list.extend(["stock_to_salary_ratio"])
 ### Extract features and labels from dataset for local testing
 data = featureFormat(my_dataset, features_list, sort_keys = True)
 labels, features = targetFeatureSplit(data)
