@@ -2,13 +2,11 @@
 
 import sys
 import pickle
-import os
-import numpy as np
 from scipy.stats import describe
 import matplotlib.pyplot as plt
+import pprint as pp
 
-os.chdir(r"E:\machine_learning\ud120-projects-master\final_project")
-sys.path.append(r"E:\machine_learning\ud120-projects-master/tools/")
+sys.path.append(r"../tools/")
 
 from feature_format import featureFormat, targetFeatureSplit
 from tester import dump_classifier_and_data
@@ -16,10 +14,7 @@ from tester import dump_classifier_and_data
 ### Task 1: Select what features you'll use.
 ### features_list is a list of strings, each of which is a feature name.
 ### The first feature must be "poi".
-features_list =  ['salary', 'deferral_payments', 'total_payments',
-'loan_advances', 'bonus', 'restricted_stock_deferred', 'deferred_income', 
-'total_stock_value', 'expenses', 'exercised_stock_options', 'other', 
-'long_term_incentive', 'restricted_stock', 'director_fees','to_messages',
+features_list =  ['poi','salary', 'total_payments', 'bonus', 'total_stock_value', 'expenses', 'exercised_stock_options', 'long_term_incentive', 'restricted_stock', 'to_messages',
 'from_poi_to_this_person', 'from_messages', 'from_this_person_to_poi', 'shared_receipt_with_poi'] # You will need to use more features
 
 ### Load the dictionary containing the dataset
@@ -65,6 +60,7 @@ def get_a_feature(feature,data=data_dict):
 salary=get_a_feature("salary")
 sorted_salary=sorted(salary, key=lambda x:x[1],reverse=True)
 #Then we can find the bad guy
+print "The outlier:"
 print sorted_salary[0]
 #delete the ourlier from our data
 data_dict.pop(sorted_salary[0][0])
@@ -91,7 +87,20 @@ labels, features = targetFeatureSplit(data)
 
 # Provided to give you a starting point. Try a variety of classifiers.
 from sklearn.naive_bayes import GaussianNB
-clf = GaussianNB()
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import f_classif
+from sklearn.pipeline import Pipeline
+from sklearn.cross_validation import StratifiedShuffleSplit
+from sklearn.grid_search import GridSearchCV
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+kBest = SelectKBest(f_classif)
+gnb = GaussianNB()
+
+pipeline = Pipeline([('fscale', scaler),
+                     ('fselect', kBest),
+                     ('gnb', gnb)])
+params_test = dict(fselect__k = [2, 3, 4])
 
 ### Task 5: Tune your classifier to achieve better than .3 precision and recall 
 ### using our testing script. Check the tester.py script in the final project
@@ -101,12 +110,35 @@ clf = GaussianNB()
 ### http://scikit-learn.org/stable/modules/generated/sklearn.cross_validation.StratifiedShuffleSplit.html
 
 # Example starting point. Try investigating other evaluation techniques!
+
 from sklearn.cross_validation import train_test_split
 features_train, features_test, labels_train, labels_test =train_test_split(features, labels, test_size=0.3, random_state=42)
+#################################################
+#without StratifiedShuffleSplit
+#################################################
+#with StratifiedShuffleSplit
+n_iters = 250
+r_state = 42
+cv = StratifiedShuffleSplit(labels, n_iter = n_iters, random_state = r_state)
+grid_search = GridSearchCV(pipeline, params_test, cv = cv, scoring = "f1")
+grid_search.fit(features, labels)
+best_params=grid_search.best_params_
+print "the best parameters for this clf is:"
+pp.pprint(best_params)
+clf = pipeline.set_params(**best_params)
+print "Scores of the features:"
+print pipeline.named_steps['fselect'].fit(features, labels).scores_
 
 ### Task 6: Dump your classifier, dataset, and features_list so anyone can
 ### check your results. You do not need to change anything below, but make sure
 ### that the version of poi_id.py that you submit can be run on its own and
 ### generates the necessary .pkl files for validating your results.
-
+from sklearn.metrics import precision_score
+from sklearn.metrics import recall_score
+clf.fit(features_train,labels_train)
+pred=clf.predict(features_test)
+precision=precision_score(labels_test,pred)
+recall=recall_score(labels_test,pred)
+print "precision :",precision
+print "recall :",recall
 dump_classifier_and_data(clf, my_dataset, features_list)

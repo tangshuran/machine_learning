@@ -1,0 +1,10 @@
+KNeighborsClassifier
+{'fselect__k': 4,
+ 'fselect__score_func': <function sklearn.feature_selection.univariate_selection.f_classif>,
+ 'knn__algorithm': 'brute',
+ 'knn__leaf_size': 1,
+ 'knn__n_neighbors': 3,
+ 'knn__weights': 'distance'}
+SVM 
+ {'fselect__k': 2, 'svm__C': 50, 'svm__gamma': 10, 'svm__kernel': 'rbf'}
+
