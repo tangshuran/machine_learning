@@ -14,8 +14,23 @@ from tester import dump_classifier_and_data
 ### Task 1: Select what features you'll use.
 ### features_list is a list of strings, each of which is a feature name.
 ### The first feature must be "poi".
-features_list =  ['poi','salary', 'total_payments', 'bonus', 'total_stock_value', 'expenses', 'exercised_stock_options', 'long_term_incentive', 'restricted_stock', 'to_messages',
-'from_poi_to_this_person', 'from_messages', 'from_this_person_to_poi', 'shared_receipt_with_poi'] # You will need to use more features
+features_list =  [
+'poi',
+'salary', 
+'exercised_stock_options',
+'bonus', 
+'total_stock_value',
+"deferred_income", 
+'expenses', 
+'total_payments', 
+'long_term_incentive',
+'restricted_stock', 
+'to_messages',
+'from_poi_to_this_person', 
+'from_messages', 
+'from_this_person_to_poi',
+'shared_receipt_with_poi'
+] # You will need to use more features
 
 ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
@@ -93,15 +108,40 @@ from sklearn.pipeline import Pipeline
 from sklearn.cross_validation import StratifiedShuffleSplit
 from sklearn.grid_search import GridSearchCV
 from sklearn.preprocessing import StandardScaler
-scaler = StandardScaler()
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+#scaler = StandardScaler()
+#kBest = SelectKBest(f_classif)
+#gnb = GaussianNB()
+#
+#pipeline = Pipeline([#('fscale', scaler),
+#                     ('fselect', kBest),
+#                     ('gnb', gnb)])
+#params_test = dict(fselect__k = [2, 3, 4])
+############################################################
+#scaler = StandardScaler()
+#kBest = SelectKBest(f_classif)
+#svm = SVC()
+#
+#pipeline = Pipeline([#('fscale', scaler), 
+#                     ('fselect', kBest),
+#                     ('svm', svm)])
+#
+#params_test = dict(fselect__k = [2, 3, 4],
+#                   svm__C = [1, 2, 10, 50],
+#                   svm__kernel = ['rbf', 'linear'],
+#                   svm__gamma = ['auto', 10])
+###############################################################
 kBest = SelectKBest(f_classif)
-gnb = GaussianNB()
+tree = DecisionTreeClassifier()
 
-pipeline = Pipeline([('fscale', scaler),
-                     ('fselect', kBest),
-                     ('gnb', gnb)])
-params_test = dict(fselect__k = [2, 3, 4])
+pipeline = Pipeline([('fselect', kBest),
+                     ('tree', tree)])
 
+params_test = dict(fselect__k = [2, 3, 4],
+                   tree__min_samples_split = [2, 3, 4, 5],
+                   tree__criterion = ['gini', 'entropy'],
+                   tree__max_features = [1, 2])
 ### Task 5: Tune your classifier to achieve better than .3 precision and recall 
 ### using our testing script. Check the tester.py script in the final project
 ### folder for details on the evaluation method, especially the test_classifier
