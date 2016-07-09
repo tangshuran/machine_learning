@@ -110,6 +110,7 @@ from sklearn.grid_search import GridSearchCV
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
 #scaler = StandardScaler()
 #kBest = SelectKBest(f_classif)
 #gnb = GaussianNB()
@@ -119,29 +120,31 @@ from sklearn.tree import DecisionTreeClassifier
 #                     ('gnb', gnb)])
 #params_test = dict(fselect__k = [2, 3, 4])
 ############################################################
-#scaler = StandardScaler()
+scaler = StandardScaler()
+kBest = SelectKBest()
+knn = KNeighborsClassifier()
+
+pipeline = Pipeline([#('fscale', scaler), 
+                     ('fselect', kBest),
+                     ('knn', knn)])
+
+params_test = dict(fselect__score_func = [f_classif],
+                  knn__n_neighbors=[3, 5, 7],
+                  fselect__k = [2, 3, 4],
+                  knn__weights = ['distance', 'uniform'],
+                  knn__algorithm = ['brute', 'kd_tree', 'ball_tree'],
+                  knn__leaf_size = [1, 3, 5])
+###############################################################
 #kBest = SelectKBest(f_classif)
-#svm = SVC()
+#tree = DecisionTreeClassifier()
 #
-#pipeline = Pipeline([#('fscale', scaler), 
-#                     ('fselect', kBest),
-#                     ('svm', svm)])
+#pipeline = Pipeline([('fselect', kBest),
+#                     ('tree', tree)])
 #
 #params_test = dict(fselect__k = [2, 3, 4],
-#                   svm__C = [1, 2, 10, 50],
-#                   svm__kernel = ['rbf', 'linear'],
-#                   svm__gamma = ['auto', 10])
-###############################################################
-kBest = SelectKBest(f_classif)
-tree = DecisionTreeClassifier()
-
-pipeline = Pipeline([('fselect', kBest),
-                     ('tree', tree)])
-
-params_test = dict(fselect__k = [2, 3, 4],
-                   tree__min_samples_split = [2, 3, 4, 5],
-                   tree__criterion = ['gini', 'entropy'],
-                   tree__max_features = [1, 2])
+#                   tree__min_samples_split = [2, 3, 4, 5],
+#                   tree__criterion = ['gini', 'entropy'],
+#                   tree__max_features = [1, 2])
 ### Task 5: Tune your classifier to achieve better than .3 precision and recall 
 ### using our testing script. Check the tester.py script in the final project
 ### folder for details on the evaluation method, especially the test_classifier
@@ -151,13 +154,13 @@ params_test = dict(fselect__k = [2, 3, 4],
 
 # Example starting point. Try investigating other evaluation techniques!
 
-from sklearn.cross_validation import train_test_split
-features_train, features_test, labels_train, labels_test =train_test_split(features, labels, test_size=0.3, random_state=42)
+#from sklearn.cross_validation import train_test_split
+#features_train, features_test, labels_train, labels_test =train_test_split(features, labels, test_size=0.3, random_state=42)
 #################################################
 #without StratifiedShuffleSplit
 #################################################
 #with StratifiedShuffleSplit
-n_iters = 250
+n_iters = 100
 r_state = 42
 cv = StratifiedShuffleSplit(labels, n_iter = n_iters, random_state = r_state)
 grid_search = GridSearchCV(pipeline, params_test, cv = cv, scoring = "f1")
@@ -175,10 +178,27 @@ print pipeline.named_steps['fselect'].fit(features, labels).scores_
 ### generates the necessary .pkl files for validating your results.
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
-clf.fit(features_train,labels_train)
-pred=clf.predict(features_test)
-precision=precision_score(labels_test,pred)
-recall=recall_score(labels_test,pred)
-print "precision :",precision
-print "recall :",recall
+#clf.fit(features_train,labels_train)
+#pred=clf.predict(features_test)
+#precision=precision_score(labels_test,pred)
+#recall=recall_score(labels_test,pred)
+#print "precision :",precision
+#print "recall :",recall
+pred_class = []
+actual_class = []
+
+# Calculate precision and recall and report on evaluation metrics
+for train_indices, test_indices in cv:
+    features_train = [features[ii] for ii in train_indices]
+    features_test = [features[ii] for ii in test_indices]
+    labels_train = [labels[ii] for ii in train_indices]
+    labels_test = [labels[ii] for ii in test_indices]
+
+    clf.fit(features_train, labels_train)
+    pred_class.extend(clf.predict(features_test))
+    actual_class.extend(labels_test)
+print
+print 'Results ({} iterations, random state {}):'.format(n_iters, r_state)
+print "\tPrecision: ", precision_score(actual_class, pred_class)
+print "\tRecall:", recall_score(actual_class, pred_class)
 dump_classifier_and_data(clf, my_dataset, features_list)
