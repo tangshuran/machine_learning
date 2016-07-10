@@ -20,16 +20,16 @@ features_list =  [
 'exercised_stock_options',
 'bonus', 
 'total_stock_value',
-"deferred_income", 
-'expenses', 
-'total_payments', 
-'long_term_incentive',
-'restricted_stock', 
-'to_messages',
-'from_poi_to_this_person', 
-'from_messages', 
-'from_this_person_to_poi',
-'shared_receipt_with_poi'
+#"deferred_income", 
+#'expenses', 
+#'total_payments', 
+#'long_term_incentive',
+#'restricted_stock', 
+#'to_messages',
+#'from_poi_to_this_person', 
+#'from_messages', 
+#'from_this_person_to_poi',
+#'shared_receipt_with_poi'
 ] # You will need to use more features
 
 ### Load the dictionary containing the dataset
@@ -45,10 +45,21 @@ def summarise_data(feature,data=data_dict):
             temp.append(info[feature])
     result=describe(temp)
     print "num_of_nans:",num_of_nans
-    print ""
     print "describe the feature:",result
         
-    
+poi_number=0
+non_poi_number=0
+features_number=len(data_dict.items()[0][1])
+for a in data_dict:
+    if data_dict[a]["poi"]== True:
+        poi_number +=1
+    elif data_dict[a]["poi"]== False:
+        non_poi_number +=1
+    else:
+        pass
+print "number of poi is:",poi_number
+print "number of non poi is:", non_poi_number
+print "features_number is:", features_number    
     
 ### Task 2: Remove outliers
 #find the existance of the outlier through visualization
@@ -89,7 +100,7 @@ for each in my_dataset.values():
         each["stock_to_salary_ratio"]=float(each['total_stock_value'])/each['salary']
     else:
         each["stock_to_salary_ratio"]="NaN"
-features_list.extend(["stock_to_salary_ratio"])
+#features_list.extend(["stock_to_salary_ratio"])
 ### Extract features and labels from dataset for local testing
 data = featureFormat(my_dataset, features_list, sort_keys = True)
 labels, features = targetFeatureSplit(data)
@@ -188,6 +199,7 @@ pred_class = []
 actual_class = []
 
 # Calculate precision and recall and report on evaluation metrics
+#cited from https://github.com/Maanum/DAND-P5-IdentifyEnronFraud
 for train_indices, test_indices in cv:
     features_train = [features[ii] for ii in train_indices]
     features_test = [features[ii] for ii in test_indices]
